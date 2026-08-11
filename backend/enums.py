@@ -1,6 +1,6 @@
 from enum import Enum
 
-# for jobs
+# for jobs and tasks
 class State(Enum):
     created = 1
     pending = 2
@@ -19,8 +19,14 @@ class Status(Enum):
     disconnected = 5
     off = 6
 
-# for jobs
+# for jobs and tasks
 class Priority(Enum):
-    top = 1
-    general = 2
+    high = 1
+    normal = 2
     low = 3
+
+# for shots
+class Complexity(Enum):
+    high = 4
+    mid = 2
+    low = 1
