@@ -1,21 +1,4 @@
-# from scheduler import Scheduler
+from backend.scheduler_cli import SchedulerCLI
 
-def exit_prog():
-    print("Turning off scheduler...")
-    exit()
-    
-
-print("Distributed Render Scheduler")
-
-arr = []
-cmd_list = ["exit", ""]
-while True:
-    cmd = str(input(">> "))
-
-    if cmd == "exit":
-        exit_prog()
-    else:
-        print(cmd)
-
-# commands: run scheduler, add worker, status, submit job, cancel job, 
-
+prog = SchedulerCLI()
+prog.run()

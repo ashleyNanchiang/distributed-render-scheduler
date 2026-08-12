@@ -38,11 +38,16 @@ User -> Interface ->
  + terminated
 
  # Worker Status
- + starting
- + idle
- + working
- + sleeping
- + off
+  + starting
+  + idle
+  + working
+  + sleeping
+  + off
+
+ # Priority
+  + 1
+  + 2
+  + 3
 
  # Flow
   1. user submits a job

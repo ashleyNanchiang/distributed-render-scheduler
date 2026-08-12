@@ -22,7 +22,7 @@ class Status(Enum):
 # for jobs and tasks
 class Priority(Enum):
     high = 1
-    normal = 2
+    mid = 2
     low = 3
 
 # for shots

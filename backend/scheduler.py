@@ -1,7 +1,6 @@
-from job import Job
-from task import Task
-from shot import Shot
-from worker import Worker
+from backend.job import Job
+from backend.task import Task
+from backend.shot import Shot
 import heapq
 
 class Scheduler:
@@ -37,11 +36,6 @@ class Scheduler:
                     curr_frame = end_frame
                     self.current_task_id += 1
                     
-
-
-
-
-
     def request_task():
         return 0
 
