@@ -17,10 +17,12 @@ class Worker:
         self.status = Status.idle
 
     def execute_task(self, task):
+        self.status = Status.busy
         print(f"Worker {self.id} start task {task.id}")
         execution_time = Worker.EXE_TIME_PER_FRAME * task.complexity * (1 / self.efficiency) * task.end_frame
         time.sleep(execution_time)
         print(f"Worker {self.id} finish task {task.id}: time = {execution_time}")
+        self.status = Status.idle
 
     def __repr__(self):
             return f"Worker('{self.id}', {self.efficiency})"

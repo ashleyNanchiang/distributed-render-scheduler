@@ -6,7 +6,7 @@ class Shot:
         self.frames = frames        # first frame is 1, last frame is frames
         self.complexity = complexity
 
-    def setComplexity(self, complexity):
+    def set_complexity(self, complexity):
         self.complexity = complexity
 
     def __repr__(self):
