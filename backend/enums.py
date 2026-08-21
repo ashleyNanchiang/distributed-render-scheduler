@@ -10,14 +10,23 @@ class State(IntEnum):
     paused = 6
     terminated = 7
 
-# for workers
+# for workers themselves
 class Status(IntEnum):
     starting = 1
     idle = 2
     busy = 3
-    sleeping = 4
-    disconnected = 5
-    off = 6
+    disabled = 4
+    failure = 5
+    shutting_down = 6
+    off = 7
+
+# for scheduler tracking workers
+class StatusForWorker(IntEnum):
+    idle = 2
+    busy = 3
+    disabled = 4
+    disconnected = 8
+    off = 7
 
 # for jobs and tasks
 class Priority(IntEnum):

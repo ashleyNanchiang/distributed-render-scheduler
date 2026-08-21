@@ -6,6 +6,7 @@ from backend.enums import Complexity
 from backend.enums import Priority
 import heapq
 
+# tests if shots with frames that have remainder within or outside of the threshold are properly split
 def test_splitTask_at_threshold():
     sched = Scheduler()
     shot_1_1 = Shot("shot_1_1", 55, Complexity.high)
@@ -33,7 +34,7 @@ def test_splitTask_at_threshold():
 
     assert task_list_result == task_list_correct
 
-
+# multiple shots in two jobs
 def test_splitTask_multiple_jobs():
     sched = Scheduler()
     shot_1_1 = Shot("shot_1_1", 50, Complexity.high)
