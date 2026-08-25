@@ -16,6 +16,8 @@ class Worker:
         self.status = Status.starting
         self.HEARTBEAT_TIME = 5
         self.curr_task = None
+        self.HEARTBEAT_FAILURE = 0.01
+        self.HEARTBEAT_RECOVER = 0.01
 
     def start(self):
         self.thread_heartbeat = threading.Thread(target=self.send_heartbeat)
@@ -38,7 +40,7 @@ class Worker:
     def send_heartbeat(self):
         while True:
             check_failure = random.random()
-            if check_failure < 0.01: 
+            if check_failure < self.HEARTBEAT_FAILURE: 
                 self.Status = Status.failure
 
             match self.status:
@@ -51,7 +53,7 @@ class Worker:
                     
                 case Status.failure | _:
                     check_recovery = random.random()
-                    if check_recovery < 0.01:
+                    if check_recovery < self.HEARTBEAT_RECOVER:
                         self.Status = Status.idle
                     return None
 

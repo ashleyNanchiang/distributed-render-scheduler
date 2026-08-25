@@ -8,8 +8,10 @@ class Task:
         self.start_frame = start
         self.end_frame = end
         self.time_created = time
-        self.state = State.created
+        self.state = State.pending
         self.priority = priority
+        self.time_completed = 0
+        self.worker_complete = -1
 
     def __repr__(self):
         return f"Task('{self.id}', {self.job_id}, {self.shot}, {self.start_frame}, {self.end_frame}, {self.time_created}, {self.priority})"

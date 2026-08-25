@@ -1,26 +1,35 @@
 from backend.job import Job
 from backend.task import Task
 from backend.shot import Shot
-from backend.enums import StatusForWorker
+from backend.enums import StatusForWorker, State
 import heapq
 import time
+import threading
 
 class Scheduler:
     def __init__(self):
-        self.worker_list = {}       # key: worker id, value: (status, current task id, time at receiving)
+        self.worker_list = {}       # key: worker id, value: (status, time of last received heartbeat)
         self.job_list = {}          # for display purposes
-        self.task_list = []         # tasks given to workers, priority queue
+        self.task_list = {}         # all tasks (finished or not), key is task id, value is task object
+        self.pending_tasks = []     # tasks not assigned yet, priority queue
+        self.assigned_tasks = {}    # assigned tasks, key is worker id, value is task id (-1 if no worker is assigned)
         self.FRAME_SPLIT = 50
         self.FRAME_THRESHOLD = 5
         self.current_task_id = 0
         self.current_job_id = 0
         self.HEARTBEAT_TIMECHECK = 30
-
+        self.lock = threading.Lock()
+        
     # heartbeat = [worker_id, worker_status, worker_current_task_id]
     def receive_heartbeat(self, heartbeat):
-        match heartbeat[2]:
-            case S
-        self.worker_list[heartbeat[0]] = (heartbeat[1], heartbeat[2], time.time())
+        match heartbeat[1]:
+            case StatusForWorker.idle:
+                status = StatusForWorker.idle
+            case StatusForWorker.busy:
+                status = StatusForWorker.busy
+        with self.lock:
+            self.assigned_tasks[heartbeat[0]] = heartbeat[2]
+            self.worker_list[heartbeat[0]] = (status, time.time())
     
     def add_job(self, job):
         self.job_list[job.id] = job
@@ -29,17 +38,27 @@ class Scheduler:
     def track_heartbeats(self):
         while True:
             for id, record in self.worker_list.items():
-                if (time.time() - record[2]) > self.HEARTBEAT_TIMECHECK:
-                    record = (record[0], Status., time.time())
+                # id: worker id
+                # record: (status, time of last received heartbeat)
+                if (time.time() - record[1]) > self.HEARTBEAT_TIMECHECK:
+                    record[0] = StatusForWorker.disconnected
+                    # reassign task: push task back to pending
+                    reassigned_task_id = self.assigned_tasks[id]
+                    with self.lock:
+                        self.assigned_tasks[id] = -1
+                        reassigned_task = self.task_list[reassigned_task_id]
+                        heapq.heappush(self.pending_tasks, (reassigned_task.priority, reassigned_task.time_created, reassigned_task.id, reassigned_task.id))
+            time.sleep(5)
 
-
+    # split jobs into tasks, based on number of frames
     def split_job_to_tasks(self, job):
-        # split base on frames
+        
         for sh in job.shots:
             if sh.frames <= self.FRAME_SPLIT:
-                curr_task = Task(self.current_task_id, job.id, sh, 1, sh.frames, job.time_created, job.priority)
-                heapq.heappush(self.task_list, (job.priority, job.time_created, curr_task.id, curr_task))
-                self.current_task_id += 1
+                with self.lock:
+                    self.task_list[self.current_task_id] = Task(self.current_task_id, job.id, sh, 1, sh.frames, job.time_created, job.priority)
+                    heapq.heappush(self.pending_tasks, (job.priority, job.time_created, self.current_task_id, self.current_task_id))
+                    self.current_task_id += 1
             else:
                 curr_frame = 0
                 while curr_frame < sh.frames:
@@ -47,15 +66,36 @@ class Scheduler:
                     if end_frame > sh.frames or sh.frames - end_frame <= self.FRAME_THRESHOLD:
                         end_frame = sh.frames
                     curr_frame += 1
-                    curr_task = Task(self.current_task_id, job.id, sh, curr_frame, end_frame, job.time_created, job.priority)
-                    heapq.heappush(self.task_list, (job.priority, job.time_created, curr_task.id, curr_task))
+                    with self.lock:
+                        self.task_list[self.current_task_id] = Task(self.current_task_id, job.id, sh, curr_frame, end_frame, job.time_created, job.priority)
+                        heapq.heappush(self.task_list, (job.priority, job.time_created, self.current_task_id, self.current_task_id))
+                        self.current_task_id += 1
                     curr_frame = end_frame
-                    self.current_task_id += 1
                     
-    def request_task(self):
-        if len(self.task_list) > 0:
-            return heapq.heappop(self.task_list)
+                    
+    def request_task(self, worker_id):
+        if len(self.pending_tasks) > 0:
+            task_id = heapq.heappop(self.pending_tasks)
+            task = self.task_list[task_id]
+            with self.lock:
+                self.assigned_tasks[worker_id] = task_id
+            task.state = State.in_progress
+            return task
         return None
 
-    
+    def finish_task(self, worker_id, task_id):
+        with self.lock:
+            task = self.task_list[task_id]
+            task.state = State.completed
+            task.time_completed = time.time()
+            task.worker_complete = worker_id
+            self.assigned_tasks[worker_id] = -1
+
+    def terminate_task(self, worker_id, task_id):
+        with self.lock:
+            task = self.task_list[task_id]
+            task.state = State.terminated
+            task.time_completed = time.time()
+            task.worker_complete = worker_id
+            self.assigned_tasks[worker_id] = -1
 

@@ -2,13 +2,12 @@ from enum import IntEnum
 
 # for jobs and tasks
 class State(IntEnum):
-    created = 1
-    pending = 2
-    in_progress = 3
-    completed = 4
-    failed = 5
-    paused = 6
-    terminated = 7
+    pending = 1
+    in_progress = 2
+    completed = 3
+    failed = 4
+    paused = 5
+    terminated = 6
 
 # for workers themselves
 class Status(IntEnum):
@@ -22,11 +21,11 @@ class Status(IntEnum):
 
 # for scheduler tracking workers
 class StatusForWorker(IntEnum):
-    idle = 2
-    busy = 3
-    disabled = 4
-    disconnected = 8
-    off = 7
+    idle = 1
+    busy = 2
+    disabled = 3
+    disconnected = 4
+    off = 5
 
 # for jobs and tasks
 class Priority(IntEnum):
