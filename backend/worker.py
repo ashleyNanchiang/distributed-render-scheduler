@@ -19,6 +19,11 @@ class Worker:
         self.HEARTBEAT_FAILURE = 0.01
         self.HEARTBEAT_RECOVER = 0.01
 
+        self.EXE_UPPER_LIMIT = 1.5
+        self.EXE_LOWER_LIMIT = 0.5
+        self.EXE_CENTER = 1.0
+        self.EXE_STD = 0.17
+
     def start(self):
         self.thread_heartbeat = threading.Thread(target=self.send_heartbeat)
         self.thread_run = threading.Thread(target=self.run)
@@ -28,10 +33,12 @@ class Worker:
 
     def execute_task(self):
         self.status = Status.busy
-        print(f"Worker {self.id} start task {self.curr_task.task.id}")
-        execution_time = Worker.EXE_TIME_PER_FRAME * self.curr_task.task.complexity * (1 / self.efficiency) * self.curr_task.task.end_frame
+        # print(f"Worker {self.id} start task {self.curr_task.task.id}")
+        random_factor = random.gauss(self.EXE_CENTER, self.EXE_STD)
+        random_factor = max(self.EXE_LOWER_LIMIT, min(self.EXE_UPPER_LIMIT, random_factor))
+        execution_time = Worker.EXE_TIME_PER_FRAME * self.curr_task.task.complexity * (1 / self.efficiency) * self.curr_task.task.end_frame * random_factor
         time.sleep(execution_time)
-        print(f"Worker {self.id} finish task {self.curr_task.task.id}: time = {execution_time}")
+        # print(f"Worker {self.id} finish task {self.curr_task.task.id}: time = {execution_time}")
         self.status = Status.idle
 
     def request_task(self):
@@ -65,9 +72,9 @@ class Worker:
                 case Status.idle:
                     if self.curr_task is None:
                         self.curr_task = self.request_task()
-                        if self.curr_task is not None:
+                        if self.curr_task is not None: 
                             self.execute_task()
-                            self.status = Status.busy                
+                                         
                  
     def shutdown(self):
         self.status = Status.shutting_down

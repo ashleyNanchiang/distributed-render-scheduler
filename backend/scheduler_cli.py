@@ -22,11 +22,12 @@ class SchedulerCLI:
         self.sched = Scheduler()
 
         self.cmd_list = {"submit": self.submit_job,
-                    "delete": self.delete_job,
-                    "help": self.handle_help,
-                    "add": self.handle_add,
-                    "status": self.show_status,
-                    "exit": self.exit_prog}
+                         "delete": self.delete_job,
+                         "help": self.handle_help,
+                         "add": self.handle_add,
+                         "status": self.show_status,
+                         "start": self.start_scheduler,
+                         "exit": self.exit_prog}
         
     def exit_prog(self, arg):
         print("Turning off scheduler...")
@@ -153,4 +154,7 @@ class SchedulerCLI:
                 print(cmd)
 
         # commands: run scheduler, add worker, status, submit job, cancel job, 
+
+    def start_scheduler(self):
+        pass
 
