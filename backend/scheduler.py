@@ -19,6 +19,12 @@ class Scheduler:
         self.current_job_id = 0
         self.HEARTBEAT_TIMECHECK = 30
         self.lock = threading.Lock()
+
+    def start(self):
+        self.thread_track = threading.Thread(target=self.track_heartbeats)
+        self.thread_rearrange = threading.Thread(target=self.rearrange_queue)
+        self.thread_track.start()
+        self.thread_rearrange.start()
         
     # heartbeat = [worker_id, worker_status, worker_current_task_id]
     def receive_heartbeat(self, heartbeat):
@@ -72,7 +78,14 @@ class Scheduler:
                         self.current_task_id += 1
                     curr_frame = end_frame
                     
-                    
+    def rearrange_queue(self):
+        while True:
+            current_time = time.time()
+            for task in self.pending_tasks:
+                if current_time - task.time_created >= 60:
+                    pass
+            time.sleep(5)
+    
     def request_task(self, worker_id):
         if len(self.pending_tasks) > 0:
             task_id = heapq.heappop(self.pending_tasks)
@@ -80,6 +93,7 @@ class Scheduler:
             with self.lock:
                 self.assigned_tasks[worker_id] = task_id
             task.state = State.in_progress
+            task.assigned_worker = worker_id
             return task
         return None
 

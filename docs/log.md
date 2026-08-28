@@ -19,3 +19,14 @@
     - the scheduler will run until all the jobs are done
     - then the control goes bac kto the user to submit more jobs
  - Added a random factor to the worker execution time to make it a bit more realistic
+
+ ### 2026-8-27
+ - Add progress value in Task object for tracking, and assigned_worker to track which worker it is currently assigned to
+ - Add progress value in Job object
+ - Started a function in Scheduler for scanning the task priority queue to avoid starvation
+   - think about changing to multilevel queue in the future
+ - Todo: worker execute_task and send_heartbeat may fight over setting the status, also how do I stop execute_task from setting status when failure (will need a lock)
+
+### 2026-8-28
+ - Finish rearrange_queue function in Scheduler
+ - Todo: worker execute_task and send_heartbeat may fight over setting the status, also how do I stop execute_task from setting status when failure (will need a lock)
