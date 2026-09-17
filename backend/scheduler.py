@@ -20,7 +20,7 @@ class Scheduler:
         self.HEARTBEAT_TIMECHECK = 30
         self.lock = threading.Lock()
 
-    def start(self):
+    def run(self):
         self.thread_track = threading.Thread(target=self.track_heartbeats)
         self.thread_rearrange = threading.Thread(target=self.rearrange_queue)
         self.thread_track.start()
@@ -77,14 +77,16 @@ class Scheduler:
                         heapq.heappush(self.task_list, (job.priority, job.time_created, self.current_task_id, self.current_task_id))
                         self.current_task_id += 1
                     curr_frame = end_frame
-                    
+
+    # to check: iterate through a priority queue??
+    # to implement aging of tasks and to rearrange queue to avoid starvation
     def rearrange_queue(self):
         while True:
             current_time = time.time()
             for task in self.pending_tasks:
                 if current_time - task.time_created >= 60:
                     pass
-            time.sleep(5)
+            time.sleep(60)
     
     def request_task(self, worker_id):
         if len(self.pending_tasks) > 0:

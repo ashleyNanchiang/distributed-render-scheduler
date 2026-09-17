@@ -22,11 +22,10 @@ class SchedulerCLI:
         self.sched = Scheduler()
 
         self.cmd_list = {"submit": self.submit_job,
-                         "delete": self.delete_job,
                          "help": self.handle_help,
                          "add": self.handle_add,
                          "status": self.show_status,
-                         "start": self.start_scheduler,
+                         "run": self.run_scheduler,
                          "exit": self.exit_prog}
         
     def exit_prog(self, arg):
@@ -99,9 +98,6 @@ class SchedulerCLI:
         self.job_list.append(Job(self.curr_job_id, owner.id, shot_list, priority))
         self.curr_job_id += 1
 
-    def delete_job(self, arg):
-        print("delete")
-
     def handle_help(self, arg):
         print("Commands:")
         print("\"submit [user] [csv file] [priority]\"")
@@ -141,8 +137,7 @@ class SchedulerCLI:
         self.curr_worker_id += 1
 
         for worker in self.workers:
-            worker.start()
-            print(f"Worker {worker.id} online")
+            print(f"Worker {worker.id} present")
 
         while True:
             cmd = str(input(">> "))
@@ -155,6 +150,13 @@ class SchedulerCLI:
 
         # commands: run scheduler, add worker, status, submit job, cancel job, 
 
-    def start_scheduler(self):
-        pass
+    def run_scheduler(self):
+
+        self.sched.run()
+        for worker in self.workers:
+            worker.run()
+
+        
+
+        
 

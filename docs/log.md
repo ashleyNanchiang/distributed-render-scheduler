@@ -27,6 +27,7 @@
    - think about changing to multilevel queue in the future
  - Todo: worker execute_task and send_heartbeat may fight over setting the status, also how do I stop execute_task from setting status when failure (will need a lock)
 
-### 2026-8-28
- - Finish rearrange_queue function in Scheduler
- - Todo: worker execute_task and send_heartbeat may fight over setting the status, also how do I stop execute_task from setting status when failure (will need a lock)
+### 2026-9-17
+ - Added noted to rearrange_queue function in Scheduler
+ - Add locks in worker when changing worker status
+ - Modified execute_task() in worker to sleep 1 second at a time to make updating task progress possible
