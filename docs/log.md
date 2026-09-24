@@ -31,3 +31,7 @@
  - Added noted to rearrange_queue function in Scheduler
  - Add locks in worker when changing worker status
  - Modified execute_task() in worker to sleep 1 second at a time to make updating task progress possible
+
+### 2026-9-23
+ - Fixed the problem where scheduler and worker threads not closing. Might need to look into worker status changes. Seems really messy now
+ - Added frontend files via Vite

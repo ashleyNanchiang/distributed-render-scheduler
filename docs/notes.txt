@@ -1,0 +1,8 @@
+these are some notes:
+
+npm: node package manager, came with node.js
+
+npm create vite@latest: creates project
+
+npm ruv dev: runs the server (need to be in the folder)
+

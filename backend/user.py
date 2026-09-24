@@ -1,6 +1,6 @@
-from backend.job import Job
-from backend.task import Task
-from backend.scheduler import Scheduler
+from job import Job
+from task import Task
+from scheduler import Scheduler
 
 class User:
     def __init__(self, user_id, user_name):

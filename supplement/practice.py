@@ -48,4 +48,9 @@ def test_progress_bar():
 
     print()
 
-test_rand_dist()
+def test_array():
+    worker_list = {}
+    worker_list[2] = 'a'
+    print(worker_list[1])
+
+test_array()

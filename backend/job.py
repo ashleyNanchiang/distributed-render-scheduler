@@ -1,4 +1,4 @@
-from backend.enums import State, Priority
+from enums import State, Priority
 from datetime import datetime
 
 class Job:
@@ -7,11 +7,15 @@ class Job:
         self.user_id = user_id
         self.shots = shots
         self.priority = priority
-        self.state = State.created
+        self.state = State.pending
         self.time_created = datetime.now()
+        self.progress = 0                       # 0 to 100 (percent)
 
     def add_shot(self, shot):
         self.shots.append(shot)
+
+    def current_progress(self):
+        pass
         
     def __repr__(self):
         return f"Job('{self.id}', {self.user_id}, {len(self.shots)}, {self.priority}, {self.time_created})"

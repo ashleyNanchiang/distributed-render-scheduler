@@ -1,7 +1,7 @@
-from backend.job import Job
-from backend.task import Task
-from backend.shot import Shot
-from backend.enums import StatusForWorker, State
+from job import Job
+from task import Task
+from shot import Shot
+from enums import StatusForWorker, State
 import heapq
 import time
 import threading
@@ -19,12 +19,18 @@ class Scheduler:
         self.current_job_id = 0
         self.HEARTBEAT_TIMECHECK = 30
         self.lock = threading.Lock()
+        self.active = True
 
     def run(self):
         self.thread_track = threading.Thread(target=self.track_heartbeats)
         self.thread_rearrange = threading.Thread(target=self.rearrange_queue)
         self.thread_track.start()
         self.thread_rearrange.start()
+
+    def stop(self):
+        self.active = False
+        self.thread_track.join()
+        self.thread_rearrange.join()
         
     # heartbeat = [worker_id, worker_status, worker_current_task_id]
     def receive_heartbeat(self, heartbeat):
@@ -42,7 +48,7 @@ class Scheduler:
         self.split_job_to_tasks(job)
 
     def track_heartbeats(self):
-        while True:
+        while self.active:
             for id, record in self.worker_list.items():
                 # id: worker id
                 # record: (status, time of last received heartbeat)
@@ -81,12 +87,12 @@ class Scheduler:
     # to check: iterate through a priority queue??
     # to implement aging of tasks and to rearrange queue to avoid starvation
     def rearrange_queue(self):
-        while True:
+        while self.active:
             current_time = time.time()
             for task in self.pending_tasks:
                 if current_time - task.time_created >= 60:
                     pass
-            time.sleep(60)
+            time.sleep(1)
     
     def request_task(self, worker_id):
         if len(self.pending_tasks) > 0:

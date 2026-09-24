@@ -1,4 +1,4 @@
-from backend.enums import Complexity
+from enums import Complexity
 
 class Shot:
     def __init__ (self, shot_id, frames, complexity):
@@ -10,4 +10,4 @@ class Shot:
         self.complexity = complexity
 
     def __repr__(self):
-            return f"Shot('{self.id}', {self.frames}, {self.complexity})"
+        return f"Shot('{self.id}', {self.frames}, {self.complexity})"

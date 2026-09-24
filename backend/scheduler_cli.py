@@ -1,9 +1,9 @@
-from backend.scheduler import Scheduler
-from backend.worker import Worker
-from backend.shot import Shot
-from backend.job import Job
-from backend.enums import Priority
-from backend.user import User
+from scheduler import Scheduler
+from worker import Worker
+from shot import Shot
+from job import Job
+from enums import Priority
+from user import User
 import csv
 
 class SchedulerCLI:
@@ -89,14 +89,20 @@ class SchedulerCLI:
             return
         
         shot_list = []
-        with open(arg[2], "r") as f:
-            reader = csv.reader(f)
-            next(reader)
-            for line in reader:
-                shot_list.append(Shot(line[0], line[1], line[2]))
+        try: 
+            with open(arg[2], "r") as f:
+                reader = csv.reader(f)
+                next(reader)
+                for line in reader:
+                    shot_list.append(Shot(line[0], line[1], line[2]))
+        except FileNotFoundError:
+            print("File not found\n")
+            return
 
-        self.job_list.append(Job(self.curr_job_id, owner.id, shot_list, priority))
+        submitted = Job(self.curr_job_id, owner.id, shot_list, priority)
+        self.job_list.append(submitted)
         self.curr_job_id += 1
+        self.sched.add_job(submitted)
 
     def handle_help(self, arg):
         print("Commands:")
@@ -150,12 +156,16 @@ class SchedulerCLI:
 
         # commands: run scheduler, add worker, status, submit job, cancel job, 
 
-    def run_scheduler(self):
+    def run_scheduler(self, arg):
 
         self.sched.run()
         for worker in self.workers:
-            worker.run()
-
+            worker.start()
+        while(self.sched.pending_tasks):
+            continue
+        self.sched.stop()
+        for worker in self.workers:
+            worker.shutdown()
         
 
         
