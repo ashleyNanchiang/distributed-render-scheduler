@@ -94,7 +94,7 @@ class SchedulerCLI:
                 reader = csv.reader(f)
                 next(reader)
                 for line in reader:
-                    shot_list.append(Shot(line[0], line[1], line[2]))
+                    shot_list.append(Shot(line[0], int(line[1]), line[2]))
         except FileNotFoundError:
             print("File not found\n")
             return
